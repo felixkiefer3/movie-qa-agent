@@ -1,27 +1,29 @@
-from dotenv import load_dotenv
+import os
 from google import genai
 from google.genai import types
-
-from src.api_client import search_movie
+from dotenv import load_dotenv
+from src.api_client import search_movie, get_streaming_platforms
 
 load_dotenv()
+DEFAULT_COUNTRY = os.getenv("DEFAULT_COUNTRY", "ES")
 
 client = genai.Client(http_options={"api_version": "v1beta"})
 
+system_prompt = (
+    "You are a concise movie expert. Use search_movie for general info. "
+    "If asked where to watch a movie, use get_streaming_platforms with the movie ID. "
+    f"Default country code is '{DEFAULT_COUNTRY}' unless the user specifies otherwise."
+)
+
+config = types.GenerateContentConfig(
+    system_instruction=system_prompt,
+    tools=[search_movie, get_streaming_platforms],
+    temperature=0.7,
+)
+
+chat_session = client.chats.create(model="gemini-2.5-flash", config=config)
+
 
 def ask_movie_agent(user_query: str) -> str:
-    system_prompt = (
-        "You are a concise movie expert. Use the search tool to provide "
-        "accurate movie information (plot, rating, release date) and add a brief interesting fact."
-    )
-
-    config = types.GenerateContentConfig(
-        system_instruction=system_prompt,
-        tools=[search_movie],
-        temperature=0.7,
-    )
-
-    chat = client.chats.create(model="gemini-2.5-flash", config=config)
-
-    response = chat.send_message(user_query)
+    response = chat_session.send_message(user_query)
     return response.text

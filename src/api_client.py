@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+DEFAULT_COUNTRY = os.getenv("DEFAULT_COUNTRY", "ES")
 
 
 def search_movie(query: str) -> dict:
@@ -20,11 +21,31 @@ def search_movie(query: str) -> dict:
         if results:
             movie = results[0]
             return {
+                "id": movie.get("id"),
                 "title": movie.get("title"),
                 "release_date": movie.get("release_date"),
                 "rating": movie.get("vote_average"),
                 "overview": movie.get("overview"),
             }
         return {"error": "No results found."}
+    except requests.RequestException as e:
+        return {"error": str(e)}
+
+
+def get_streaming_platforms(movie_id: int, country: str = DEFAULT_COUNTRY) -> dict:
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+    headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        providers = response.json().get("results", {}).get(country, {})
+
+        return {
+            "streaming": [
+                p.get("provider_name") for p in providers.get("flatrate", [])
+            ],
+            "rent": [p.get("provider_name") for p in providers.get("rent", [])],
+            "buy": [p.get("provider_name") for p in providers.get("buy", [])],
+        }
     except requests.RequestException as e:
         return {"error": str(e)}
