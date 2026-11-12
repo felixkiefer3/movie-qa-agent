@@ -1,8 +1,10 @@
 import os
+
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from dotenv import load_dotenv
-from src.api_client import search_movie, get_streaming_platforms
+
+from src.api_client import get_streaming_platforms, search_movie
 
 load_dotenv()
 DEFAULT_COUNTRY = os.getenv("DEFAULT_COUNTRY", "ES")

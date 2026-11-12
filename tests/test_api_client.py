@@ -1,4 +1,4 @@
-from src.api_client import search_movie, get_streaming_platforms
+from src.api_client import get_streaming_platforms, search_movie
 
 
 def test_search_movie_success(mocker):
