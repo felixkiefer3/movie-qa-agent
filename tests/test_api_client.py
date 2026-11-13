@@ -1,4 +1,10 @@
-from src.api_client import get_streaming_platforms, search_movie
+from src.api_client import (
+    get_movie_credits,
+    get_now_playing,
+    get_similar_movies,
+    get_streaming_platforms,
+    search_movie,
+)
 
 
 def test_search_movie_success(mocker):
@@ -70,3 +76,37 @@ def test_get_streaming_platforms_no_results(mocker):
     assert result["streaming"] == []
     assert result["rent"] == []
     assert result["buy"] == []
+
+
+def test_get_movie_credits(mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "cast": [{"name": "Keanu Reeves"}],
+        "crew": [{"name": "Lana Wachowski", "job": "Director"}],
+    }
+    mocker.patch("src.api_client.requests.get", return_value=mock_response)
+
+    result = get_movie_credits(603)
+    assert "Keanu Reeves" in result["cast"]
+    assert "Lana Wachowski" in result["directors"]
+
+
+def test_get_similar_movies(mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"results": [{"title": "Inception"}]}
+    mocker.patch("src.api_client.requests.get", return_value=mock_response)
+
+    result = get_similar_movies(603)
+    assert "Inception" in result["similar_movies"]
+
+
+def test_get_now_playing(mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"results": [{"title": "Gladiator II"}]}
+    mocker.patch("src.api_client.requests.get", return_value=mock_response)
+
+    result = get_now_playing("ES")
+    assert "Gladiator II" in result["now_playing"]

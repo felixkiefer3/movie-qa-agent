@@ -4,7 +4,13 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-from src.api_client import get_streaming_platforms, search_movie
+from src.api_client import (
+    get_movie_credits,
+    get_now_playing,
+    get_similar_movies,
+    get_streaming_platforms,
+    search_movie,
+)
 
 load_dotenv()
 DEFAULT_COUNTRY = os.getenv("DEFAULT_COUNTRY", "ES")
@@ -13,13 +19,22 @@ client = genai.Client(http_options={"api_version": "v1beta"})
 
 system_prompt = (
     "You are a concise movie expert. Use search_movie for general info. "
-    "If asked where to watch a movie, use get_streaming_platforms with the movie ID. "
-    f"Default country code is '{DEFAULT_COUNTRY}' unless the user specifies otherwise."
+    "Use get_streaming_platforms to find where to watch a movie. "
+    "Use get_movie_credits for actors and directors. "
+    "Use get_similar_movies for recommendations based on a title. "
+    "Use get_now_playing for movies currently in theaters. "
+    f"Default country code is '{DEFAULT_COUNTRY}' unless specified."
 )
 
 config = types.GenerateContentConfig(
     system_instruction=system_prompt,
-    tools=[search_movie, get_streaming_platforms],
+    tools=[
+        search_movie,
+        get_streaming_platforms,
+        get_movie_credits,
+        get_similar_movies,
+        get_now_playing,
+    ],
     temperature=0.7,
 )
 

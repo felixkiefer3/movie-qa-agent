@@ -49,3 +49,43 @@ def get_streaming_platforms(movie_id: int, country: str = DEFAULT_COUNTRY) -> di
         }
     except requests.RequestException as e:
         return {"error": str(e)}
+
+
+def get_movie_credits(movie_id: int) -> dict:
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits"
+    headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        cast = [c.get("name") for c in data.get("cast", [])[:5]]
+        directors = [
+            c.get("name") for c in data.get("crew", []) if c.get("job") == "Director"
+        ]
+        return {"cast": cast, "directors": directors}
+    except requests.RequestException as e:
+        return {"error": str(e)}
+
+
+def get_similar_movies(movie_id: int) -> dict:
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}/similar"
+    headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        results = response.json().get("results", [])[:5]
+        return {"similar_movies": [m.get("title") for m in results]}
+    except requests.RequestException as e:
+        return {"error": str(e)}
+
+
+def get_now_playing(country: str = DEFAULT_COUNTRY) -> dict:
+    url = f"https://api.themoviedb.org/3/movie/now_playing?region={country}"
+    headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        results = response.json().get("results", [])[:5]
+        return {"now_playing": [m.get("title") for m in results]}
+    except requests.RequestException as e:
+        return {"error": str(e)}
