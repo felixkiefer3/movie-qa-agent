@@ -1,4 +1,5 @@
 from src.api_client import (
+    discover_movies_by_date,
     get_movie_credits,
     get_now_playing,
     get_similar_movies,
