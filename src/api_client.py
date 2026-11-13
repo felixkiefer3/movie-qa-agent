@@ -86,6 +86,11 @@ def get_now_playing(country: str = DEFAULT_COUNTRY) -> dict:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         results = response.json().get("results", [])[:5]
-        return {"now_playing": [m.get("title") for m in results]}
+        return {
+            "now_playing": [
+                {"title": m.get("title"), "overview": m.get("overview")}
+                for m in results
+            ]
+        }
     except requests.RequestException as e:
         return {"error": str(e)}

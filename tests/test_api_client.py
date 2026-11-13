@@ -105,8 +105,10 @@ def test_get_similar_movies(mocker):
 def test_get_now_playing(mocker):
     mock_response = mocker.Mock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"results": [{"title": "Gladiator II"}]}
+    mock_response.json.return_value = {
+        "results": [{"title": "Gladiator II", "overview": "Acción en Roma"}]
+    }
     mocker.patch("src.api_client.requests.get", return_value=mock_response)
 
     result = get_now_playing("ES")
-    assert "Gladiator II" in result["now_playing"]
+    assert result["now_playing"][0]["title"] == "Gladiator II"
