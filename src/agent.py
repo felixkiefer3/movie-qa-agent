@@ -6,12 +6,12 @@ from google import genai
 from google.genai import types
 
 from src.api_client import (
+    discover_movies_by_date,  # NUEVO
     get_movie_credits,
     get_now_playing,
     get_similar_movies,
     get_streaming_platforms,
     search_movie,
-    discover_movies_by_date,  # NUEVO
 )
 
 load_dotenv()
