@@ -1,6 +1,6 @@
 import os
-
 import requests
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -88,6 +88,24 @@ def get_now_playing(country: str = DEFAULT_COUNTRY) -> dict:
         results = response.json().get("results", [])[:5]
         return {
             "now_playing": [
+                {"title": m.get("title"), "overview": m.get("overview")}
+                for m in results
+            ]
+        }
+    except requests.RequestException as e:
+        return {"error": str(e)}
+
+
+def discover_movies_by_date(start_date: str, end_date: str) -> dict:
+    """Fechas en formato YYYY-MM-DD"""
+    url = f"https://api.themoviedb.org/3/discover/movie?primary_release_date.gte={start_date}&primary_release_date.lte={end_date}&sort_by=popularity.desc"
+    headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        results = response.json().get("results", [])[:10]
+        return {
+            "discovered_movies": [
                 {"title": m.get("title"), "overview": m.get("overview")}
                 for m in results
             ]

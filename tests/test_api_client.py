@@ -112,3 +112,15 @@ def test_get_now_playing(mocker):
 
     result = get_now_playing("ES")
     assert result["now_playing"][0]["title"] == "Gladiator II"
+
+
+def test_discover_movies_by_date(mocker):
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "results": [{"title": "Dune: Part Two", "overview": "Sci-fi epic."}]
+    }
+    mocker.patch("src.api_client.requests.get", return_value=mock_response)
+
+    result = discover_movies_by_date("2023-01-01", "2024-01-01")
+    assert result["discovered_movies"][0]["title"] == "Dune: Part Two"
