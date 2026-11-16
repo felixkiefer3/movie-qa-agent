@@ -1,12 +1,12 @@
 import os
-from datetime import datetime  # NUEVO
+from datetime import datetime
 
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
 from src.api_client import (
-    discover_movies_by_date,  # NUEVO
+    discover_movies_by_date,
     get_movie_credits,
     get_now_playing,
     get_similar_movies,
@@ -16,7 +16,7 @@ from src.api_client import (
 
 load_dotenv()
 DEFAULT_COUNTRY = os.getenv("DEFAULT_COUNTRY", "ES")
-TODAY = datetime.now().strftime("%Y-%m-%d")  # NUEVO
+TODAY = datetime.now().strftime("%Y-%m-%d")
 
 client = genai.Client(http_options={"api_version": "v1beta"})
 
@@ -27,8 +27,11 @@ system_prompt = (
     "Use get_similar_movies for classic recommendations based on a title. "
     "Use get_now_playing for movies currently in theaters. "
     f"Use discover_movies_by_date for movies in a specific time range. Today is {TODAY}. "
-    "IMPORTANT: When asked for recommendations in theaters or specific dates based on a movie they like, "
-    "read the overviews from the tool results and logically analyze which one shares themes with the user's favorite movie. "
+    "IMPORTANT: If the user asks for movies similar to X but restricted by a date or currently in theaters, "
+    "DO NOT use get_similar_movies. You MUST use discover_movies_by_date or get_now_playing first, "
+    "read their overviews, and logically analyze which ones share themes or broad genres with movie X. "
+    "If no perfect match is found, suggest the closest options and explain why. "
+    "CONVERSATION RULE: If the user greets you, asks how you are, or says thanks, respond politely and naturally as a friendly movie expert. DO NOT try to use any search tools for casual chit-chat. "
     f"Default country code is '{DEFAULT_COUNTRY}' unless specified."
 )
 
@@ -40,7 +43,7 @@ config = types.GenerateContentConfig(
         get_movie_credits,
         get_similar_movies,
         get_now_playing,
-        discover_movies_by_date,  # NUEVO
+        discover_movies_by_date,
     ],
     temperature=0.7,
 )

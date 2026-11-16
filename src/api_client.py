@@ -103,7 +103,7 @@ def discover_movies_by_date(start_date: str, end_date: str) -> dict:
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        results = response.json().get("results", [])[:10]
+        results = response.json().get("results", [])[:20]
         return {
             "discovered_movies": [
                 {"title": m.get("title"), "overview": m.get("overview")}
