@@ -2,6 +2,15 @@ from src.agent import ask_movie_agent
 
 
 def main():
+    """
+    Initializes the command-line interface for the Movie QA Agent.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     print("Movie QA Agent initialized. Type 'exit' to quit.\n")
 
     while True:

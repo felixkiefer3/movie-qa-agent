@@ -52,11 +52,29 @@ chat_session = client.chats.create(model="gemini-2.5-flash", config=config)
 
 
 def ask_movie_agent(user_query: str) -> str:
+    """
+    Sends a query to the movie expert agent and returns the full text response.
+
+    Args:
+        user_query (str): The user's input question or prompt.
+
+    Returns:
+        str: The agent's complete text response.
+    """
     response = chat_session.send_message(user_query)
     return response.text
 
 
 def ask_movie_agent_stream(user_query: str):
+    """
+    Sends a query to the movie expert agent and yields the response as a stream.
+
+    Args:
+        user_query (str): The user's input question or prompt.
+
+    Yields:
+        str: Chunks of the agent's text response in real-time.
+    """
     response = chat_session.send_message_stream(user_query)
     for chunk in response:
         if chunk.text:

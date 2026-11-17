@@ -9,6 +9,15 @@ DEFAULT_COUNTRY = os.getenv("DEFAULT_COUNTRY", "ES")
 
 
 def search_movie(query: str) -> dict:
+    """
+    Searches for a movie by title and returns its basic details.
+
+    Args:
+        query (str): The title of the movie to search for.
+
+    Returns:
+        dict: A dictionary containing id, title, release_date, rating, and overview, or an error message.
+    """
     url = "https://api.themoviedb.org/3/search/movie"
     headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
     params = {"query": query, "language": "en-US", "page": 1}
@@ -33,6 +42,16 @@ def search_movie(query: str) -> dict:
 
 
 def get_streaming_platforms(movie_id: int, country: str = DEFAULT_COUNTRY) -> dict:
+    """
+    Retrieves available streaming, rent, and buy platforms for a specific movie ID.
+
+    Args:
+        movie_id (int): The unique TMDB identifier for the movie.
+        country (str, optional): The ISO 3166-1 alpha-2 country code. Defaults to DEFAULT_COUNTRY.
+
+    Returns:
+        dict: Lists of streaming, rent, and buy platforms, or an error message.
+    """
     url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
     headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
     try:
@@ -52,6 +71,15 @@ def get_streaming_platforms(movie_id: int, country: str = DEFAULT_COUNTRY) -> di
 
 
 def get_movie_credits(movie_id: int) -> dict:
+    """
+    Fetches the top cast and directors for a given movie ID.
+
+    Args:
+        movie_id (int): The unique TMDB identifier for the movie.
+
+    Returns:
+        dict: Lists of top cast members and directors, or an error message.
+    """
     url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits"
     headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
     try:
@@ -68,6 +96,15 @@ def get_movie_credits(movie_id: int) -> dict:
 
 
 def get_similar_movies(movie_id: int) -> dict:
+    """
+    Returns a list of classic similar movies based on a provided movie ID.
+
+    Args:
+        movie_id (int): The unique TMDB identifier for the movie.
+
+    Returns:
+        dict: A list of titles of similar movies, or an error message.
+    """
     url = f"https://api.themoviedb.org/3/movie/{movie_id}/similar"
     headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
     try:
@@ -80,6 +117,15 @@ def get_similar_movies(movie_id: int) -> dict:
 
 
 def get_now_playing(country: str = DEFAULT_COUNTRY) -> dict:
+    """
+    Gets a list of movies currently playing in theaters with their overviews.
+
+    Args:
+        country (str, optional): The ISO 3166-1 alpha-2 country code. Defaults to DEFAULT_COUNTRY.
+
+    Returns:
+        dict: A list of dictionaries containing movie titles and overviews, or an error message.
+    """
     url = f"https://api.themoviedb.org/3/movie/now_playing?region={country}"
     headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
     try:
@@ -97,7 +143,16 @@ def get_now_playing(country: str = DEFAULT_COUNTRY) -> dict:
 
 
 def discover_movies_by_date(start_date: str, end_date: str) -> dict:
-    """Fechas en formato YYYY-MM-DD"""
+    """
+    Discovers movies released within a specific date range.
+
+    Args:
+        start_date (str): The start date in YYYY-MM-DD format.
+        end_date (str): The end date in YYYY-MM-DD format.
+
+    Returns:
+        dict: A list of dictionaries containing movie titles and overviews, or an error message.
+    """
     url = f"https://api.themoviedb.org/3/discover/movie?primary_release_date.gte={start_date}&primary_release_date.lte={end_date}&sort_by=popularity.desc"
     headers = {"accept": "application/json", "Authorization": f"Bearer {TMDB_API_KEY}"}
     try:
