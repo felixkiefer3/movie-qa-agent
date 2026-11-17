@@ -54,3 +54,10 @@ chat_session = client.chats.create(model="gemini-2.5-flash", config=config)
 def ask_movie_agent(user_query: str) -> str:
     response = chat_session.send_message(user_query)
     return response.text
+
+
+def ask_movie_agent_stream(user_query: str):
+    response = chat_session.send_message_stream(user_query)
+    for chunk in response:
+        if chunk.text:
+            yield chunk.text
